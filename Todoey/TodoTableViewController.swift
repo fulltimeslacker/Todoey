@@ -20,7 +20,7 @@ class TodoTableViewController: UITableViewController {
     }
 
 
-    let itemsArray = ["Find Goku", "Buy Sensu Beans", "Kill Freezer"]
+    var itemsArray = ["Find Goku", "Buy Sensu Beans", "Kill Freezer"]
     
     
     //Mark - Tableview Datasource Methods
@@ -64,6 +64,28 @@ class TodoTableViewController: UITableViewController {
 //
 //    }
     
+    //Mark add new items
+    
+    @IBAction func addItemButtonPressed(_ sender: UIBarButtonItem) {
+        
+        var addItemTextField = UITextField()
+        
+        let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            
+            self.itemsArray.append(addItemTextField.text!)
+            self.tableView.reloadData() // reloads table view after new item entered to dispaly
+        }
+        
+        alert.addTextField { (alertTextfield) in
+            alertTextfield.placeholder = "Create new item"
+            addItemTextField = alertTextfield
+        }
+        alert.addAction(action)
+        
+        present(alert, animated: true, completion: nil)
+    }
     
 }
 

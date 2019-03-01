@@ -17,9 +17,14 @@ class TodoTableViewController: UITableViewController {
 //        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tableViewTapped))
 //        tableView.addGestureRecognizer(tapGesture)
         
+        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+            itemsArray = items
+            
+        } // Loads user save as Array variable using key TodoListArray
+        
     }
 
-
+    let defaults = UserDefaults.standard // creates user defaults
     var itemsArray = ["Find Goku", "Buy Sensu Beans", "Kill Freezer"]
     
     
@@ -75,6 +80,9 @@ class TodoTableViewController: UITableViewController {
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             
             self.itemsArray.append(addItemTextField.text!)
+            
+            self.defaults.set(self.itemsArray, forKey: "TodoListArray") // saves current Array into user defaults as an array for key TodoListArray
+            
             self.tableView.reloadData() // reloads table view after new item entered to dispaly
         }
         

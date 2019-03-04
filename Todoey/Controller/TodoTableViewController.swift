@@ -7,17 +7,19 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoTableViewController: UITableViewController {
     var itemsArray = [Item]()
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
-    
+//    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    //using singleton to set AppDelegate as an object, tapping into view context
     override func viewDidLoad() {
         super.viewDidLoad()
         
         
    
-        print(dataFilePath!)
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         // Do any additional setup after loading the view, typically from a nib.
         
 //        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tableViewTapped))
@@ -43,7 +45,7 @@ class TodoTableViewController: UITableViewController {
 //            itemsArray = items
 //        }
         
-        loadItems()
+          loadItems()
     }
 
 //let defaults = UserDefaults.standard // creates user defaults
@@ -55,7 +57,7 @@ class TodoTableViewController: UITableViewController {
     
     
     
-    //Mark - Tableview Datasource Methods
+    //MARK: - Tableview Datasource Methods
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
@@ -83,7 +85,7 @@ class TodoTableViewController: UITableViewController {
     }
     
     
-    //MARK - Tableview Delegate Methods
+    //MARK: - Tableview Delegate Methods
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 //        print(indexPath.row)
@@ -110,7 +112,7 @@ class TodoTableViewController: UITableViewController {
 //
 //    }
     
-    //Mark add new items
+    //MARK: - add new items
     
     @IBAction func addItemButtonPressed(_ sender: UIBarButtonItem) {
         
@@ -120,8 +122,10 @@ class TodoTableViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             
-            let newItem = Item()
+
+            let newItem = Item(context: self.context)
             newItem.title = addItemTextField.text!
+            newItem.done = false
             self.itemsArray.append(newItem)
             
         
@@ -143,11 +147,14 @@ class TodoTableViewController: UITableViewController {
     
     func saveItems () {
         
-        let encoder = PropertyListEncoder()
+//let encoder = PropertyListEncoder()
         
         do {
-            let data = try encoder.encode(itemsArray)
-            try data.write(to: dataFilePath!)
+            // let data = try encoder.encode(itemsArray) removed since using context
+            // try data.write(to: dataFilePath!)
+            
+            try context.save()
+            
         } catch {
             print("Error encoding data \(error)")
             
@@ -156,17 +163,44 @@ class TodoTableViewController: UITableViewController {
         
     }
     
-    func loadItems() {
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            do {
-                itemsArray = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("Error decoding \(error)")
-                
-            }
-            
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest() ) {
+//        if let data = try? Data(contentsOf: dataFilePath!) {
+//            let decoder = PropertyListDecoder()
+//            do {
+//                itemsArray = try decoder.decode([Item].self, from: data)
+//            } catch {
+//                print("Error decoding \(error)")
+//
+//            }
+//
+//        }
+        
+       // let request : NSFetchRequest<Item> = Item.fetchRequest()
+        do{
+            itemsArray = try context.fetch(request)
+        } catch {
+            print("Error fetching data from context \(error)")
         }
+        
+        tableView.reloadData()
     }
 }
 
+//MARK: - search function
+extension TodoTableViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        
+     
+        
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        
+        loadItems(with: request)
+        
+    
+        
+    }
+}

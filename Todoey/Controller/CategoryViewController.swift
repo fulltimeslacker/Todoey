@@ -90,15 +90,17 @@ class CategoryViewController: UITableViewController {
             
             
             let newCategory = Category(context: self.context)
+            if addItemTextField.text != "" {
             newCategory.name = addItemTextField.text!
             
             self.categoryArray.append(newCategory)
-            
+            self.saveCategories()
+            }
             
             
             // self.defaults.set(self.itemsArray, forKey: "TodoListArray") // saves current Array into user defaults as an array for key TodoListArray
             
-            self.saveCategories()
+            
         }
         
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)

@@ -131,16 +131,20 @@ class TodoTableViewController: UITableViewController {
             
 
             let newItem = Item(context: self.context)
-            newItem.title = addItemTextField.text!
-            newItem.done = false
-            newItem.parentCategory = self.selectedCategory
-            self.itemsArray.append(newItem)
+            if addItemTextField.text != "" {
+                
+                newItem.title = addItemTextField.text!
+                newItem.done = false
+                newItem.parentCategory = self.selectedCategory
+                self.itemsArray.append(newItem)
+                self.saveItems()
+            }
             
         
             
            // self.defaults.set(self.itemsArray, forKey: "TodoListArray") // saves current Array into user defaults as an array for key TodoListArray
             
-           self.saveItems()
+           
         }
         
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)

@@ -73,7 +73,7 @@ class CategoryViewController: UITableViewController {
         let destinationVC = segue.destination as! TodoTableViewController
         
         if let indexPath = tableView.indexPathForSelectedRow {
-            //destinationVC.selectedCategory = categoryArray[indexPath.row]
+            destinationVC.selectedCategory = categoryArray[indexPath.row]
         }
     }
     

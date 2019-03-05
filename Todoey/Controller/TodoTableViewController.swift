@@ -190,11 +190,11 @@ class TodoTableViewController: UITableViewController {
        // let request : NSFetchRequest<Item> = Item.fetchRequest()
         
         let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        // query parentCategory.name matching selectedCategory.name and set to categoryPredicate
         
-        
-        if let additionalPredicate = predicate {
+        if let additionalPredicate = predicate { //if search predicate gets passed in, set request.predicate = compound predicate with categoryPredicate
             request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
-        } else {
+        } else { // if search predicate is nil, request.predicate is categoryPredicate
             request.predicate = categoryPredicate
         }
 //        let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, predicate])

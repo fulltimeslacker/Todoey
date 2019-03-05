@@ -71,6 +71,7 @@ class TodoTableViewController: UITableViewController {
        
         cell.accessoryType = item.done == true ? .checkmark : .none
         
+        
 //        if itemsArray[indexPath.row].done == true {
 //            cell.accessoryType = .checkmark
 //        } else {

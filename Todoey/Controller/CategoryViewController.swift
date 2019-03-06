@@ -9,7 +9,8 @@
 import UIKit
 import RealmSwift
 
-class CategoryViewController: UITableViewController {
+
+class CategoryViewController: SwipeViewController {
     
     var categoryArray : Results<Category>?
    // let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -20,16 +21,17 @@ class CategoryViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         print(Realm.Configuration.defaultConfiguration.fileURL)
-
+        tableView.rowHeight = 80
         loadCategories()
     }
 
     // MARK: - Table view data source
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCells", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         
         cell.textLabel?.text = categoryArray?[indexPath.row].name ?? "No Category added yet"
+        
         //cell.textLabel?.textColor = UIColor.white
         //cell.backgroundColor = UIColor.black
         
@@ -40,6 +42,21 @@ class CategoryViewController: UITableViewController {
         return categoryArray?.count ?? 1
     }
     //MARK: - Data manipulation Methods
+    
+    override func updateModel(at indexPath: IndexPath) {
+        if let categoryToDelete = self.categoryArray?[indexPath.row] {
+            do{
+                try self.realm.write {
+                    self.realm.delete(categoryToDelete)
+    
+                }
+            } catch {
+                print("There was an error deleting \(error)")
+            }
+        }
+
+    }
+    
     func save (category: Category) {
         
         do {
@@ -127,3 +144,4 @@ class CategoryViewController: UITableViewController {
     
 
 }
+

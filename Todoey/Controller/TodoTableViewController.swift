@@ -9,7 +9,8 @@
 import UIKit
 import RealmSwift
 
-class TodoTableViewController: UITableViewController {
+
+class TodoTableViewController: SwipeViewController {
     var itemsArray: Results<Item>?
     let realm = try! Realm()
     
@@ -25,7 +26,8 @@ class TodoTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+        tableView.rowHeight = 80
+    
    
        
         // Do any additional setup after loading the view, typically from a nib.
@@ -68,8 +70,10 @@ class TodoTableViewController: UITableViewController {
     //MARK: - Tableview Datasource Methods
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
+        //calls super class cell
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
+        //additional commands
         if let item = itemsArray?[indexPath.row]
         {
         cell.textLabel?.text = item.title
@@ -223,6 +227,19 @@ class TodoTableViewController: UITableViewController {
 
         tableView.reloadData()
     }
+    
+    override func updateModel(at indexPath: IndexPath) {
+        if let itemToDelete = self.itemsArray?[indexPath.row] {
+            do{
+                try self.realm.write {
+                    self.realm.delete(itemToDelete)
+                    
+                }
+            } catch {
+                print("There was an error deleting \(error)")
+            }
+        }
+    }
 }
 
 //MARK: - search function
@@ -258,4 +275,7 @@ extension TodoTableViewController: UISearchBarDelegate {
 
     }
 }
+
+    
+
 
